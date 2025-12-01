@@ -80,7 +80,7 @@
             </div>
         );
 
-        // --- 전구 가랜드 ---
+        // --- 전구 가랜드 (선명도 개선 버전) ---
         const LightGarlands = () => {
             const strings = [
                 { start: [-10, 5], end: [110, 10], cpY: 25, id: 's1' }, 
@@ -99,13 +99,16 @@
                 <div className="absolute inset-x-0 top-0 h-44 z-0 pointer-events-none">
                     <svg className="w-full h-full" viewBox="0 0 100 60" preserveAspectRatio="none">
                         <defs>
-                            <radialGradient id="bulbGradient" cx="40%" cy="40%" r="60%">
-                                <stop offset="0%" stopColor="#fff" stopOpacity="0.9" />
-                                <stop offset="40%" stopColor="#fde68a" stopOpacity="0.8" />
-                                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.9" />
+                            {/* 그라데이션: 하이라이트를 더 좁고 선명하게 (r=50%) */}
+                            <radialGradient id="bulbGradient" cx="35%" cy="35%" r="50%" fx="30%" fy="30%">
+                                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                                <stop offset="40%" stopColor="#fde68a" stopOpacity="0.95" />
+                                <stop offset="100%" stopColor="#f59e0b" stopOpacity="1" />
                             </radialGradient>
+                            
+                            {/* 블러 필터: stdDeviation 1.0 -> 0.4 로 줄여서 선명하게 */}
                             <filter id="bulbGlow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feGaussianBlur stdDeviation="1.0" result="coloredBlur"/>
+                                <feGaussianBlur stdDeviation="0.4" result="coloredBlur"/>
                                 <feComposite in="coloredBlur" in2="SourceGraphic" operator="over"/>
                             </filter>
                         </defs>
@@ -136,21 +139,23 @@
                                         return (
                                             <g key={`b-${str.id}-${i}`} transform={`translate(${x}, ${y}) rotate(${angle})`}>
                                                 <g className="bulb-wrapper" style={{ animationDelay: animDelay }}>
+                                                    {/* 전구 본체 */}
                                                     <circle 
                                                         cx="0" 
                                                         cy="2" 
                                                         r="1.8" 
                                                         fill="url(#bulbGradient)"
-                                                        stroke="#f59e0b"
+                                                        stroke="#d97706"
                                                         strokeWidth="0.1"
                                                     />
+                                                    {/* 빛 번짐 (더 작고 투명하게 조정) */}
                                                     <circle 
                                                         cx="0" 
                                                         cy="2" 
                                                         r="1.8" 
                                                         fill="#fcd34d"
                                                         filter="url(#bulbGlow)"
-                                                        opacity="0.6"
+                                                        opacity="0.4" 
                                                         className="bulb-glow"
                                                     />
                                                 </g>
@@ -196,10 +201,10 @@
                             animation-iteration-count: infinite;
                         }
                         
-                        /* 전구 반짝임 애니메이션*/
+                        /* 전구 반짝임 애니메이션 - 선명도를 위해 스케일 조정 폭 축소 */
                         @keyframes softTwinkle {
-                            0%, 100% { opacity: 0.8; transform: scale(1); filter: brightness(1); }
-                            50% { opacity: 1; transform: scale(1.1); filter: brightness(1.2); }
+                            0%, 100% { opacity: 0.9; transform: scale(1); filter: brightness(1); }
+                            50% { opacity: 1; transform: scale(1.05); filter: brightness(1.1); }
                         }
                         .bulb-wrapper {
                             animation: softTwinkle 3s ease-in-out infinite;
@@ -366,3 +371,4 @@
     </script>
 </body>
 </html>
+
