@@ -23,7 +23,7 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
-        // 아이콘 컴포넌트
+        // 아이콘 컴포넌트 
         const Sparkles = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         );
@@ -45,12 +45,11 @@
         const Home = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         );
-
         const Smile = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>
         );
 
-        // 지붕 & 굴뚝
+        // 지붕 & 굴뚝 
         const RoofAndChimney = () => (
             <div className="fixed bottom-0 left-0 w-full z-20 pointer-events-none font-sans">
                 <div className="absolute bottom-20 right-8 md:right-32 w-32 h-40 bg-gradient-to-b from-[#8D6E63] via-[#795548] to-[#5D4037] flex flex-col items-center rounded-t-3xl rounded-b-lg border-4 border-[#4E342E] shadow-2xl transform rotate-2">
@@ -87,7 +86,7 @@
             </div>
         );
 
-        // 전구 가랜드 
+        // 전구 가랜드
         const LightGarlands = () => {
             const strings = [
                 { start: [-10, 5], end: [110, 10], cpY: 25, id: 's1' }, 
@@ -104,7 +103,8 @@
 
             return (
                 <div className="absolute inset-x-0 top-0 h-44 z-0 pointer-events-none">
-                    <svg className="w-full h-full" viewBox="0 0 100 60" preserveAspectRatio="none">
+                    {/* Layer 1: 전선 */}
+                    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 60" preserveAspectRatio="none">
                         <defs>
                             <radialGradient id="bulbGradient" cx="35%" cy="35%" r="50%" fx="30%" fy="30%">
                                 <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
@@ -121,54 +121,71 @@
                         {strings.map((str) => {
                             const cpX = (str.start[0] + str.end[0]) / 2;
                             const pathD = `M ${str.start[0]},${str.start[1]} Q ${cpX},${str.cpY} ${str.end[0]},${str.end[1]}`;
-
                             return (
-                                <g key={str.id}>
-                                    <path
-                                        d={pathD}
-                                        fill="none"
-                                        stroke="#d1d5db"
-                                        strokeWidth="0.5"
-                                        strokeLinecap="round"
-                                        opacity="0.8"
-                                    />
-
-                                    {bulbXPositions.map((x, i) => {
-                                        const t = (x - str.start[0]) / (str.end[0] - str.start[0]);
-                                        
-                                        const y = getQuadraticBezierY(t, str.start[1], str.cpY, str.end[1]);
-                                        
-                                        const angle = -5 + Math.random() * 10;
-                                        const animDelay = (i * 0.3 + (str.id === 's2' ? 0.5 : 0)) + 's';
-
-                                        return (
-                                            <g key={`b-${str.id}-${i}`} transform={`translate(${x}, ${y}) rotate(${angle})`}>
-                                                <g className="bulb-wrapper" style={{ animationDelay: animDelay }}>
-                                                    <circle 
-                                                        cx="0" 
-                                                        cy="2" 
-                                                        r="1.8" 
-                                                        fill="url(#bulbGradient)"
-                                                        stroke="#d97706"
-                                                        strokeWidth="0.1"
-                                                    />
-                                                    <circle 
-                                                        cx="0" 
-                                                        cy="2" 
-                                                        r="1.8" 
-                                                        fill="#fcd34d"
-                                                        filter="url(#bulbGlow)"
-                                                        opacity="0.4" 
-                                                        className="bulb-glow"
-                                                    />
-                                                </g>
-                                            </g>
-                                        );
-                                    })}
-                                </g>
+                                <path
+                                    key={str.id}
+                                    d={pathD}
+                                    fill="none"
+                                    stroke="#d1d5db"
+                                    strokeWidth="0.5"
+                                    strokeLinecap="round"
+                                    opacity="0.8"
+                                />
                             );
                         })}
                     </svg>
+
+                    {/* Layer 2: 전구 */}
+                    {strings.map((str) => (
+                        <React.Fragment key={str.id}>
+                            {bulbXPositions.map((x, i) => {
+                                const t = (x - str.start[0]) / (str.end[0] - str.start[0]);
+                                const y = getQuadraticBezierY(t, str.start[1], str.cpY, str.end[1]);
+                                const topPercent = (y / 60) * 100;
+                                
+                                const angle = -5 + Math.random() * 10;
+                                const animDelay = (i * 0.3 + (str.id === 's2' ? 0.5 : 0)) + 's';
+
+                                return (
+                                    <div 
+                                        key={`b-${str.id}-${i}`} 
+                                        className="absolute"
+                                        style={{
+                                            left: `${x}%`,
+                                            top: `${topPercent}%`,
+                                            transform: `translate(-50%, 0) rotate(${angle}deg)`, 
+                                            width: '20px',
+                                            height: '20px'
+                                        }}
+                                    >
+                                        <svg width="100%" height="100%" viewBox="0 0 6 6" className="overflow-visible">
+                                            <g className="bulb-wrapper" style={{ animationDelay: animDelay }}>
+                                                {/* 전구 본체 */}
+                                                <circle 
+                                                    cx="3" 
+                                                    cy="3" 
+                                                    r="1.8" 
+                                                    fill="url(#bulbGradient)"
+                                                    stroke="#d97706"
+                                                    strokeWidth="0.1"
+                                                />
+                                                {/* 빛 번짐 */}
+                                                <circle 
+                                                    cx="3" 
+                                                    cy="3" 
+                                                    r="1.8" 
+                                                    fill="#fcd34d"
+                                                    filter="url(#bulbGlow)"
+                                                    opacity="0.4" 
+                                                    className="bulb-glow"
+                                                />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                );
+                            })}
+                        </React.Fragment>
+                    ))}
                 </div>
             );
         };
@@ -212,7 +229,7 @@
                             animation: softTwinkle 3s ease-in-out infinite;
                         }
 
-                        /* 스노우볼 내부 눈 내림 애니메이션 */
+                        /* 스노우볼 내부 눈 내림 애니메이션 (3가지 패턴) */
                         @keyframes snowball-fall-1 {
                             0% { transform: translateY(-20%) translateX(0); opacity: 0; }
                             20% { opacity: 0.9; }
@@ -280,7 +297,7 @@
                     <RoofAndChimney />
 
                     <div className="snap-container relative z-10">
-                        {/* PAGE 1 */}
+                        {/* PAGE 1: Intro */}
                         <section className="snap-section px-6 text-center">
                             <h2 className="text-lg text-red-200 mb-2 tracking-widest font-light">
                                 표정 한 장으로 남기는 오늘
@@ -297,7 +314,7 @@
                             </div>
                         </section>
 
-                        {/* PAGE 2 */}
+                        {/* PAGE 2: AI 캐릭터 */}
                         <section className="snap-section px-6">
                             <div className="glass-card p-8 w-full max-w-[320px] flex flex-col items-center shadow-2xl border-t-4 border-red-500">
                                 <div className="relative mb-8">
@@ -324,7 +341,7 @@
                             </div>
                         </section>
 
-                        {/* PAGE 3 */}
+                        {/* PAGE 3: 감정 도감 */}
                         <section className="snap-section px-6">
                             <div className="glass-card p-6 w-full max-w-[320px] flex flex-col items-center shadow-2xl border-t-4 border-green-600">
                                 <div className="grid grid-cols-4 gap-3 mb-6 w-full">
@@ -353,8 +370,7 @@
                                 </div>
                                 <p className="text-sm text-center text-gray-300 leading-relaxed">
                                     하루하루 쌓인 감정들이<br />
-                                    달력 위에서 크리스마스 트리처럼<br />
-                                    반짝이며 채워질 거예요.
+                                    달력 위에 반짝이며 채워질 거예요.<br />
                                 </p>
                             </div>
                             <div className="absolute bottom-10 animate-bounce">
@@ -362,7 +378,7 @@
                             </div>
                         </section>
 
-                        {/* PAGE 4 */}
+                        {/* PAGE 4: 감정 라운지 꾸미기*/}
                         <section className="snap-section px-6">
                             <div className="absolute inset-0 bg-gradient-to-t from-orange-900/30 via-transparent to-transparent pointer-events-none"></div>
 
@@ -372,12 +388,12 @@
                                     {/* 유리 구체 */}
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-white/5 backdrop-blur-sm border-4 border-white/30 shadow-[0_0_20px_rgba(255,215,0,0.3)] overflow-hidden">
                                         
-                                        {/* 1. 집 */}
+                                        {/* 1. 집 (고정) */}
                                         <div className="absolute inset-0 flex items-center justify-center pb-2">
                                             <Home className="w-20 h-20 text-yellow-200 filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
                                         </div>
 
-                                        {/* 2. 스노우볼 내부 눈 내림 */}
+                                        {/* 2. 스노우볼 내부 눈 내림*/}
                                         {[...Array(50)].map((_, i) => {
                                             const animType = Math.ceil(Math.random() * 3); 
                                             const size = Math.random() * 2 + 1.5; 
@@ -401,10 +417,9 @@
                                     <Home className="w-5 h-5" />
                                     <span className="font-bold">감정 라운지 채우기</span>
                                 </div>
-
                                 <p className="text-sm text-center text-gray-300 leading-relaxed">
                                     크리스마스를 맞이한<br />
-                                    집을 따뜻하게 꾸며보세요!
+                                    집을 캐릭터들과 함께 꾸며보세요!
                                 </p>
                             </div>
                             <div className="absolute bottom-10 animate-bounce">
@@ -447,5 +462,6 @@
     </script>
 </body>
 </html>
+
 
 
