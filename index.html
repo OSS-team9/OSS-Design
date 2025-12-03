@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오늘:하루 - Christmas Edition</title>
+    <title>오늘:하루</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -21,11 +21,11 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useMemo } = React;
 
-        // --- 아이콘 컴포넌트 ---
+        // 아이콘 컴포넌트
         const Sparkles = ({ className }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         );
         const ChevronDown = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m6 9 6 6 6-6"/></svg>
@@ -42,8 +42,15 @@
         const Camera = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
         );
+        const Home = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        );
 
-        // --- 지붕 & 굴뚝 ---
+        const Smile = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>
+        );
+
+        // 지붕 & 굴뚝
         const RoofAndChimney = () => (
             <div className="fixed bottom-0 left-0 w-full z-20 pointer-events-none font-sans">
                 <div className="absolute bottom-20 right-8 md:right-32 w-32 h-40 bg-gradient-to-b from-[#8D6E63] via-[#795548] to-[#5D4037] flex flex-col items-center rounded-t-3xl rounded-b-lg border-4 border-[#4E342E] shadow-2xl transform rotate-2">
@@ -80,7 +87,7 @@
             </div>
         );
 
-        // --- 전구 가랜드  ---
+        // 전구 가랜드 
         const LightGarlands = () => {
             const strings = [
                 { start: [-10, 5], end: [110, 10], cpY: 25, id: 's1' }, 
@@ -137,7 +144,6 @@
                                         return (
                                             <g key={`b-${str.id}-${i}`} transform={`translate(${x}, ${y}) rotate(${angle})`}>
                                                 <g className="bulb-wrapper" style={{ animationDelay: animDelay }}>
-                                                    {/* 전구 본체 */}
                                                     <circle 
                                                         cx="0" 
                                                         cy="2" 
@@ -146,7 +152,6 @@
                                                         stroke="#d97706"
                                                         strokeWidth="0.1"
                                                     />
-                                                    {/* 빛 번짐 */}
                                                     <circle 
                                                         cx="0" 
                                                         cy="2" 
@@ -199,7 +204,6 @@
                             animation-iteration-count: infinite;
                         }
                         
-                        /* 전구 반짝임 애니메이션 */
                         @keyframes softTwinkle {
                             0%, 100% { opacity: 0.9; transform: scale(1); filter: brightness(1); }
                             50% { opacity: 1; transform: scale(1.05); filter: brightness(1.1); }
@@ -207,6 +211,26 @@
                         .bulb-wrapper {
                             animation: softTwinkle 3s ease-in-out infinite;
                         }
+
+                        /* 스노우볼 내부 눈 내림 애니메이션 */
+                        @keyframes snowball-fall-1 {
+                            0% { transform: translateY(-20%) translateX(0); opacity: 0; }
+                            20% { opacity: 0.9; }
+                            100% { transform: translateY(150%) translateX(10px); opacity: 0; }
+                        }
+                        @keyframes snowball-fall-2 {
+                            0% { transform: translateY(-20%) translateX(0); opacity: 0; }
+                            20% { opacity: 0.9; }
+                            100% { transform: translateY(150%) translateX(-10px); opacity: 0; }
+                        }
+                        @keyframes snowball-fall-3 {
+                            0% { transform: translateY(-20%) translateX(0); opacity: 0; }
+                            20% { opacity: 0.9; }
+                            100% { transform: translateY(700%) translateX(100px); opacity: 0; }
+                        }
+                        .animate-snowball-fall-1 { animation: snowball-fall-1 3s linear infinite; }
+                        .animate-snowball-fall-2 { animation: snowball-fall-2 3.5s linear infinite; }
+                        .animate-snowball-fall-3 { animation: snowball-fall-3 2.8s linear infinite; }
 
                         .snap-container {
                             scroll-snap-type: y mandatory;
@@ -224,7 +248,7 @@
                             align-items: center;
                             justify-content: center;
                             position: relative;
-                            padding-bottom: 180px;
+                            padding-bottom: 240px; 
                         }
                         .glass-card {
                             background: rgba(255, 255, 255, 0.1);
@@ -285,9 +309,11 @@
                                         AI
                                     </div>
                                 </div>
-                                <h3 className="text-2xl font-bold mb-3 text-center">
-                                    표정으로 만드는<br />나의 캐릭터
-                                </h3>
+
+                                <div className="flex items-center gap-2 mb-2 text-yellow-300">
+                                    <Smile className="w-5 h-5" />
+                                    <span className="font-bold">표정으로 만드는 나의 캐릭터</span>
+                                </div>
                                 <p className="text-sm text-center text-gray-300 leading-relaxed">
                                     얼굴을 찍으면,<br />
                                     AI가 감정을 읽고 캐릭터를 만들어요.
@@ -337,27 +363,79 @@
                         </section>
 
                         {/* PAGE 4 */}
-                        <section className="snap-section px-6 text-center bg-black/40 backdrop-blur-sm">
-                            <div className="mb-6 relative">
-                                <Heart className="w-20 h-20 text-red-500 mx-auto animate-pulse fill-red-500" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-3xl">?</span>
+                        <section className="snap-section px-6">
+                            <div className="absolute inset-0 bg-gradient-to-t from-orange-900/30 via-transparent to-transparent pointer-events-none"></div>
+
+                            <div className="glass-card p-6 w-full max-w-[320px] flex flex-col items-center shadow-2xl border-t-4 border-yellow-500 relative z-10">
+                                {/* 스노우볼 */}
+                                <div className="relative mb-5 w-40 h-40">
+                                    {/* 유리 구체 */}
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-white/5 backdrop-blur-sm border-4 border-white/30 shadow-[0_0_20px_rgba(255,215,0,0.3)] overflow-hidden">
+                                        
+                                        {/* 1. 집 */}
+                                        <div className="absolute inset-0 flex items-center justify-center pb-2">
+                                            <Home className="w-20 h-20 text-yellow-200 filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
+                                        </div>
+
+                                        {/* 2. 스노우볼 내부 눈 내림 */}
+                                        {[...Array(50)].map((_, i) => {
+                                            const animType = Math.ceil(Math.random() * 3); 
+                                            const size = Math.random() * 2 + 1.5; 
+                                            return (
+                                                <div key={i} className={`absolute bg-white rounded-full opacity-80 animate-snowball-fall-${animType}`} style={{
+                                                    left: `${Math.random() * 100}%`,
+                                                    width: `${size}px`,
+                                                    height: `${size}px`,
+                                                    animationDelay: `${Math.random() * 3}s`,
+                                                    animationDuration: `${2.5 + Math.random() * 2.5}s`
+                                                }} />
+                                            );
+                                        })}
+                                    </div>
+                                    
+                                    {/* 스노우볼 받침대 */}
+                                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 h-6 bg-gradient-to-b from-yellow-700 to-yellow-900 rounded-full shadow-lg z-20"></div>
                                 </div>
+                                
+                                <div className="flex items-center gap-2 mb-2 text-yellow-300">
+                                    <Home className="w-5 h-5" />
+                                    <span className="font-bold">감정 라운지 채우기</span>
+                                </div>
+
+                                <p className="text-sm text-center text-gray-300 leading-relaxed">
+                                    크리스마스를 맞이한<br />
+                                    집을 따뜻하게 꾸며보세요!
+                                </p>
                             </div>
-                            <h2 className="text-2xl font-bold mb-8 leading-snug">
-                                지금 당신의 감정은<br />
-                                어떤 모습일까요?
-                            </h2>
-                            <button
-                                className="w-full max-w-[280px] py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-full text-lg shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 ring-2 ring-white/30"
-                                onClick={() => window.location.href = "https://oss-frontend-red.vercel.app/"}
-                            >
-                                <Camera className="w-5 h-5" />
-                                <span>지금 바로 시작하기</span>
-                            </button>
-                            <p className="mt-6 text-xs text-gray-400">
-                                © 2025 Today's Mood Team. All rights reserved.
-                            </p>
+                            <div className="absolute bottom-10 animate-bounce">
+                                <ChevronDown className="w-8 h-8 text-white opacity-70" />
+                            </div>
+                        </section>
+
+                        {/* PAGE 5 */}
+                        <section className="snap-section px-6 text-center bg-black/40 backdrop-blur-sm">
+                            <div className="glass-card p-8 w-full max-w-[320px] flex flex-col items-center justify-center shadow-2xl border-t-4 border-red-500">
+                                <div className="mb-6 relative">
+                                    <Heart className="w-20 h-20 text-red-500 mx-auto animate-pulse fill-red-500" />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-3xl">?</span>
+                                    </div>
+                                </div>
+                                <h2 className="text-2xl font-bold mb-8 leading-snug">
+                                    지금 당신의 감정은<br />
+                                    어떤 모습일까요?
+                                </h2>
+                                <button
+                                    className="w-full max-w-[280px] py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-full text-lg shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 ring-2 ring-white/30"
+                                    onClick={() => window.location.href = "https://oss-frontend-red.vercel.app/"}
+                                >
+                                    <Camera className="w-5 h-5" />
+                                    <span>지금 바로 시작하기</span>
+                                </button>
+                                <p className="mt-6 text-xs text-gray-400">
+                                    © 2025 Today-Haru Team. All rights reserved.
+                                </p>
+                            </div>
                         </section>
                     </div>
                 </div>
